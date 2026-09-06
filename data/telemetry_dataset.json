@@ -1,0 +1,42 @@
+[
+  {"_phase": "Phase 1: Cold Start & Idling"},
+  { "rpm": 800, "frequencyHz": 160, "decibels": 51.0 },
+  { "rpm": 820, "frequencyHz": 164, "decibels": 51.5 },
+  { "rpm": 850, "frequencyHz": 170, "decibels": 52.1 },
+  { "rpm": 850, "frequencyHz": 170, "decibels": 52.3 },
+  { "rpm": 900, "frequencyHz": 180, "decibels": 53.0 },
+
+  {"_phase": "Phase 2: Cruising & Moderate Acceleration"},
+  { "rpm": 1200, "frequencyHz": 240, "decibels": 55.4 },
+  { "rpm": 1500, "frequencyHz": 300, "decibels": 56.8 },
+  { "rpm": 1800, "frequencyHz": 360, "decibels": 58.2 },
+  { "rpm": 2100, "frequencyHz": 420, "decibels": 59.9 },
+  { "rpm": 2500, "frequencyHz": 500, "decibels": 62.0 },
+  { "rpm": 2800, "frequencyHz": 560, "decibels": 64.1 },
+  { "rpm": 3200, "frequencyHz": 640, "decibels": 66.5 },
+
+  {"_phase": "Phase 3: Incipient Degradation (Minor Friction Noise)"},
+  { "rpm": 3400, "frequencyHz": 1200, "decibels": 69.2 },
+  { "rpm": 3500, "frequencyHz": 1800, "decibels": 70.8 },
+  { "rpm": 3600, "frequencyHz": 2250, "decibels": 71.5 },
+
+  {"_phase": "Phase 4: Active Anomaly & Critical Belt Slip"},
+  { "rpm": 3800, "frequencyHz": 2850, "decibels": 78.4 },
+  { "rpm": 4000, "frequencyHz": 2980, "decibels": 80.2 },
+  { "rpm": 4100, "frequencyHz": 3100, "decibels": 82.1 },
+  { "rpm": 4200, "frequencyHz": 3250, "decibels": 84.5 },
+  { "rpm": 3900, "frequencyHz": 2900, "decibels": 79.8 },
+  { "rpm": 3500, "frequencyHz": 2700, "decibels": 76.5 },
+  { "rpm": 3000, "frequencyHz": 2600, "decibels": 74.2 },
+
+  {"_phase": "Phase 5: Deceleration & Fault Clearing"},
+  { "rpm": 2400, "frequencyHz": 480, "decibels": 61.3 },
+  { "rpm": 2000, "frequencyHz": 400, "decibels": 58.9 },
+  { "rpm": 1600, "frequencyHz": 320, "decibels": 57.1 },
+  { "rpm": 1200, "frequencyHz": 240, "decibels": 54.8 },
+
+  {"_phase": "Phase 6: Return to Idle Baseline"},
+  { "rpm": 900, "frequencyHz": 180, "decibels": 52.0 },
+  { "rpm": 850, "frequencyHz": 170, "decibels": 51.2 },
+  { "rpm": 800, "frequencyHz": 160, "decibels": 50.8 }
+]
