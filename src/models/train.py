@@ -64,7 +64,13 @@ def train():
     
     model = OmnisTwinModel(at.model, NUM_CLASSES).to(device)
     
-    criterion = nn.CrossEntropyLoss()
+    # Calculate class weights to heavily penalize false positives on 'normal' cases
+    class_weights = torch.ones(NUM_CLASSES)
+    for cls_name, idx in train_dataset.class_to_idx.items():
+        if "normal" in cls_name.lower():
+            class_weights[idx] = 3.0 # Tripled weight for healthy states
+            
+    criterion = nn.CrossEntropyLoss(weight=class_weights.to(device))
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     
     best_val_loss = float('inf')
