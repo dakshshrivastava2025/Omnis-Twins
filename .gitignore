@@ -1,0 +1,24 @@
+# Dataset folders (ignore contents except .gitkeep)
+data/audio/*
+!data/audio/.gitkeep
+data/sensor/*
+!data/sensor/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+.venv/
+env/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Models and Weights
+*.pth
+*.pt
+*.h5
+*.hdf5
+models/
