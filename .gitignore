@@ -21,4 +21,4 @@ env/
 *.pt
 *.h5
 *.hdf5
-models/
+/models/
