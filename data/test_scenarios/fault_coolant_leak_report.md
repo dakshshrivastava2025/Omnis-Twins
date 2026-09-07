@@ -1,7 +1,7 @@
 # Scenario Report: Coolant System Leak
 
 **Type:** Fault  
-**Generated:** 2026-09-07 23:52:29  
+**Generated:** 2026-09-07 23:58:54  
 **CSV:** `d:\VIT\hackathon\Code2Create\github\data\test_scenarios\fault_coolant_leak.csv`  
 **Duration:** 7200 s (2 hours) at 1 Hz  
 
@@ -13,13 +13,13 @@
 |-------|-------|
 | Status | **ANOMALY** |
 | Criticality | CRITICAL |
-| Peak MSE Score | 1.5287 |
-| Threshold | 0.0613 |
-| MSE / Threshold ratio | 24.93x |
+| Peak MSE Score | 1.5237 |
+| Threshold | 0.0618 |
+| MSE / Threshold ratio | 24.65x |
 | First breach at | 50 s (0.8 min) |
 | Sustained breach from | 50 s (0.8 min) |
-| Root cause sensor | `coolant_temp_C` |
-| Failing component | Radiator / Cooling System |
+| Root cause sensor | `coolant_pressure_PSI` |
+| Failing component | Radiator / Coolant Lines |
 
 ## Actual live_telemetry.json Output
 
@@ -27,33 +27,34 @@ This is the real output the system produced — passed to the 3D UI:
 
 ```json
 {
-  "time_s": 6934.0,
+  "time_s": 6925.0,
   "status": "ANOMALY",
   "title": "CRITICAL COMPONENT FAILURE DETECTED",
   "criticality": "CRITICAL",
-  "mse_score": 1.5286661386489868,
-  "threshold": 0.061308339238166795,
-  "root_cause_sensor": "coolant_temp_C",
-  "failing_component": "Radiator / Cooling System",
-  "description": "Autoencoder detected deviation in coolant_temp_C. Highlight the Radiator / Cooling System."
+  "mse_score": 1.5236787796020508,
+  "threshold": 0.06180388405919074,
+  "root_cause_sensor": "coolant_pressure_PSI",
+  "failing_component": "Radiator / Coolant Lines",
+  "description": "Autoencoder detected deviation in coolant_pressure_PSI. Highlight the Radiator / Coolant Lines."
 }
 ```
 
 ## 3D UI Action
 
-- **Highlight component:** Radiator / Cooling System
-- **Alert color:** Red (CRITICAL)
-- **Description for tooltip/TTS:** _Autoencoder detected deviation in coolant_temp_C. Highlight the Radiator / Cooling System._
+- **Status: ANOMALY detected**
+- **Highlight component:** Radiator / Coolant Lines
+- **Alert color:** 🔴 Red (CRITICAL)
+- **Description for tooltip/TTS:** _Autoencoder detected deviation in coolant_pressure_PSI. Highlight the Radiator / Coolant Lines._
 
 ## MSE Statistics
 
 ```
-  Peak MSE Score          : 1.5287
-  Avg MSE (full drive)    : 0.4671
-  Avg MSE (first 60 min)  : 0.1090
-  Avg MSE (after 60 min)  : 0.8205
-  Threshold               : 0.0613
-  % of drive above thresh : 94.6%
+  Peak MSE Score          : 1.5237
+  Avg MSE (full drive)    : 0.4763
+  Avg MSE (first 60 min)  : 0.1418
+  Avg MSE (after 60 min)  : 0.8064
+  Threshold               : 0.0618
+  % of drive above thresh : 97.5%
 ```
 
 ## Data Generation Log

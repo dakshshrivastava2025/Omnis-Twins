@@ -1,7 +1,7 @@
 # Scenario Report: Mountain / Uphill Drive
 
 **Type:** Edge Case  
-**Generated:** 2026-09-07 23:52:49  
+**Generated:** 2026-09-07 23:59:15  
 **CSV:** `d:\VIT\hackathon\Code2Create\github\data\test_scenarios\edge_mountain_drive.csv`  
 **Duration:** 7200 s (2 hours) at 1 Hz  
 
@@ -13,9 +13,9 @@
 |-------|-------|
 | Status | **HEALTHY** |
 | Criticality | NONE |
-| Peak MSE Score | 0.0075 |
-| Threshold | 0.0613 |
-| MSE / Threshold ratio | 0.12x |
+| Peak MSE Score | 0.0064 |
+| Threshold | 0.0618 |
+| MSE / Threshold ratio | 0.10x |
 | First breach at | Never |
 | Sustained breach from | Never (or brief only) |
 
@@ -29,24 +29,24 @@ This is the real output the system produced — passed to the 3D UI:
   "status": "HEALTHY",
   "title": "SYSTEM NORMAL",
   "criticality": "NONE",
-  "mse_score": 0.007508569862693548,
-  "threshold": 0.061308339238166795
+  "mse_score": 0.006378350779414177,
+  "threshold": 0.06180388405919074
 }
 ```
 
 ## 3D UI Action
 
+- **Status: HEALTHY** ✅
 - **No component highlight** — system displays green / nominal state.
-- **Status:** HEALTHY
 
 ## MSE Statistics
 
 ```
-  Peak MSE Score          : 0.0215
-  Avg MSE (full drive)    : 0.0092
-  Avg MSE (first 60 min)  : 0.0097
-  Avg MSE (after 60 min)  : 0.0087
-  Threshold               : 0.0613
+  Peak MSE Score          : 0.0228
+  Avg MSE (full drive)    : 0.0091
+  Avg MSE (first 60 min)  : 0.0096
+  Avg MSE (after 60 min)  : 0.0085
+  Threshold               : 0.0618
   % of drive above thresh : 0.0%
 ```
 

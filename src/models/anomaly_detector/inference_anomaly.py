@@ -97,55 +97,93 @@ def run_inference(csv_path: str = None) -> dict:
             error_per_sensor = torch.mean((reconstructed - batch)**2, dim=(0, 1)).cpu().numpy()
             feature_errors.append(error_per_sensor)
             
-    # Threshold is loaded from calibration — do NOT recompute from live data.
-    # (Removed wrong baseline computation here.)
-    
-    # Let's simulate a "live" JSON output representing the peak anomaly
-    max_error_idx = np.argmax(mse_scores)
-    max_error = mse_scores[max_error_idx]
-    
-    if max_error > THRESHOLD:
-        # It's an anomaly! Let's find the root cause.
-        worst_features = feature_errors[max_error_idx]
-        
-        # Which sensor has the highest reconstruction error?
-        worst_sensor_idx = np.argmax(worst_features)
+    mse_arr = np.array(mse_scores)
+
+    # ── Sustained breach detection ─────────────────────────────────────────────
+    # A real fault produces SUSTAINED elevation above threshold (minutes).
+    # Normal driving events (hard acceleration bursts, gear changes) produce
+    # brief spikes that immediately recover. We require >= 60 consecutive seconds
+    # above threshold before declaring an anomaly.
+    SUSTAINED_MIN_S = 60
+
+    # Find the longest sustained breach window and its peak
+    best_start_idx  = None
+    best_peak_idx   = None
+    best_peak_mse   = 0.0
+    run_start       = None
+    run_peak_idx    = None
+    run_peak_mse    = 0.0
+
+    for i, (mse_val, t_val) in enumerate(zip(mse_arr, time_s)):
+        if mse_val > THRESHOLD:
+            if run_start is None:
+                run_start    = i
+                run_peak_idx = i
+                run_peak_mse = mse_val
+            elif mse_val > run_peak_mse:
+                run_peak_idx = i
+                run_peak_mse = mse_val
+        else:
+            if run_start is not None:
+                duration = time_s[i - 1] - time_s[run_start]
+                if duration >= SUSTAINED_MIN_S and run_peak_mse > best_peak_mse:
+                    best_start_idx = run_start
+                    best_peak_idx  = run_peak_idx
+                    best_peak_mse  = run_peak_mse
+            run_start = None
+            run_peak_idx = None
+            run_peak_mse = 0.0
+
+    # Check if still in a breach at end of drive
+    if run_start is not None:
+        duration = time_s[-1] - time_s[run_start]
+        if duration >= SUSTAINED_MIN_S and run_peak_mse > best_peak_mse:
+            best_start_idx = run_start
+            best_peak_idx  = run_peak_idx
+            best_peak_mse  = run_peak_mse
+
+    is_anomaly = best_peak_idx is not None
+
+    if is_anomaly:
+        worst_features    = feature_errors[best_peak_idx]
+        worst_sensor_idx  = np.argmax(worst_features)
         worst_sensor_name = sensor_cols[worst_sensor_idx]
-        
-        # Determine Criticality
-        ratio = max_error / THRESHOLD
+        failing_component = COMPONENT_MAP.get(worst_sensor_name, "Unknown Component")
+
+        ratio = best_peak_mse / THRESHOLD
         if ratio > 3.0:
             criticality = "CRITICAL"
-            title = "CRITICAL COMPONENT FAILURE DETECTED"
+            title       = "CRITICAL COMPONENT FAILURE DETECTED"
         elif ratio > 1.5:
             criticality = "HIGH"
-            title = "MAJOR ANOMALY DETECTED"
+            title       = "MAJOR ANOMALY DETECTED"
         else:
             criticality = "WARNING"
-            title = "SYSTEM DEGRADATION DETECTED"
-            
-        failing_component = COMPONENT_MAP.get(worst_sensor_name, "Unknown Component")
-        
+            title       = "SYSTEM DEGRADATION DETECTED"
+
         telemetry = {
-            "time_s": float(time_s[max_error_idx]),
-            "status": "ANOMALY",
-            "title": title,
-            "criticality": criticality,
-            "mse_score": float(max_error),
-            "threshold": float(THRESHOLD),
-            "root_cause_sensor": worst_sensor_name,
-            "failing_component": failing_component,
-            "description": f"Autoencoder detected deviation in {worst_sensor_name}. Highlight the {failing_component}."
+            "time_s":             float(time_s[best_start_idx]),
+            "status":             "ANOMALY",
+            "title":              title,
+            "criticality":        criticality,
+            "mse_score":          float(best_peak_mse),
+            "threshold":          float(THRESHOLD),
+            "root_cause_sensor":  worst_sensor_name,
+            "failing_component":  failing_component,
+            "description":        f"Autoencoder detected sustained deviation in {worst_sensor_name}. Highlight the {failing_component}."
         }
     else:
+        # Report the peak MSE seen, even in healthy case, for diagnostics
+        max_error_idx = int(np.argmax(mse_arr))
         telemetry = {
-            "time_s": float(time_s[-1]),
-            "status": "HEALTHY",
-            "title": "SYSTEM NORMAL",
-            "criticality": "NONE",
-            "mse_score": float(mse_scores[-1]),
-            "threshold": float(THRESHOLD)
+            "time_s":     float(time_s[-1]),
+            "status":     "HEALTHY",
+            "title":      "SYSTEM NORMAL",
+            "criticality":"NONE",
+            "mse_score":  float(mse_arr[max_error_idx]),
+            "threshold":  float(THRESHOLD)
         }
+
         
     out_json = os.path.join(model_dir, "live_telemetry.json")
     with open(out_json, "w") as f:

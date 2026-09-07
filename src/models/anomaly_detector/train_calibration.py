@@ -134,8 +134,13 @@ def train():
             cal_mse_scores.append(mse)
 
     cal_mse = np.array(cal_mse_scores)
-    threshold = float(np.percentile(cal_mse, 95))
+    # Use 99th percentile — 95th is too tight. Brief burst events (hard acceleration,
+    # gear changes) in normal training data push the 95th pct low enough that
+    # perfectly healthy highway bursts get flagged. 99th pct requires a much larger
+    # sustained deviation before triggering.
+    threshold = float(np.percentile(cal_mse, 99))
     joblib.dump(threshold, os.path.join(model_dir, "threshold.joblib"))
+
 
     print(f"Calibration MSE — mean: {cal_mse.mean():.4f}  std: {cal_mse.std():.4f}  95th pct (threshold): {threshold:.4f}")
     print("Calibration Training Complete! Model, Scaler, and Threshold saved.")
