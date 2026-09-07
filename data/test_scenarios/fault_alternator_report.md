@@ -1,56 +1,73 @@
 # Scenario Report: Alternator Diode Failure
 
 **Type:** Fault  
-**Generated:** 2026-09-07 23:28:08  
+**Generated:** 2026-09-07 23:46:32  
 **CSV:** `d:\VIT\hackathon\Code2Create\github\data\test_scenarios\fault_alternator.csv`  
 **Duration:** 7200 s (2 hours) at 1 Hz  
-**Fault starts at:** 60 min (3600 s)  
 
 ---
 
-## Description
+## Inference Result
 
-Alternator diode failure causes the alternator to draw extra mechanical torque from the engine to compensate, acting as a parasitic drag load. This raises engine_load without the driver increasing throttle or gaining speed.
+| Field | Value |
+|-------|-------|
+| Status | **ANOMALY** |
+| Criticality | CRITICAL |
+| Peak MSE Score | 3.3189 |
+| Threshold | 0.0327 |
+| MSE / Threshold ratio | 101.38x |
+| First breach at | 50 s (0.8 min) |
+| Sustained breach from | 50 s (0.8 min) |
+| Root cause sensor | `intake_air_temp_C` |
+| Failing component | Air Intake System |
 
-## Broken Correlation (What the Autoencoder Catches)
+## Actual live_telemetry.json Output
 
-In healthy driving, engine_load and throttle_pos are tightly coupled to speed and RPM. During alternator failure, engine_load rises WITHOUT corresponding throttle or speed increase. The model cannot reconstruct 'high load, normal throttle, normal speed' — it's never seen this.
-
-## Sensor Deviations
-
-| Sensor | Direction | Physical Reason |
-|--------|-----------|-----------------|
-| `engine_load` | RISES above throttle prediction | Parasitic alternator drag adds hidden mechanical load |
-| `coolant_temp_C` | RISES above RPM prediction | Extra engine work from drag generates more heat |
-
-## Run Statistics
-
-```
-  Healthy load avg (final 10 min) 42.1%
-  Faulty  load avg (final 10 min) 51.9%
-  Healthy temp (final)           119.7 C
-  Faulty  temp (final)           123.0 C
-  Alt drag severity (final)      0.730
-```
-
-## Expected Autoencoder Behavior
-
-**Expected MSE:** HIGH — load/throttle/speed decorrelation detectable from ~75 min  
-
-## Expected Downstream JSON Output
-
-This is the approximate `live_telemetry.json` the system will produce:
+This is the real output the system produced — passed to the 3D UI:
 
 ```json
 {
+  "time_s": 4374.0,
   "status": "ANOMALY",
-  "title": "COMPONENT FAILURE DETECTED",
+  "title": "CRITICAL COMPONENT FAILURE DETECTED",
   "criticality": "CRITICAL",
-  "root_cause_sensor": "engine_load",
-  "failing_component": "Engine Block",
-  "description": "Autoencoder detected deviation in engine_load. Highlight the Engine Block."
+  "mse_score": 3.318927764892578,
+  "threshold": 0.03273742515593767,
+  "root_cause_sensor": "intake_air_temp_C",
+  "failing_component": "Air Intake System",
+  "description": "Autoencoder detected deviation in intake_air_temp_C. Highlight the Air Intake System."
 }
 ```
 
-### 3D UI Action
-Highlight: **Engine Block**
+## 3D UI Action
+
+- **Highlight component:** Air Intake System
+- **Alert color:** Red (CRITICAL)
+- **Description for tooltip/TTS:** _Autoencoder detected deviation in intake_air_temp_C. Highlight the Air Intake System._
+
+## MSE Statistics
+
+```
+  Peak MSE Score          : 3.3189
+  Avg MSE (full drive)    : 1.4239
+  Avg MSE (first 60 min)  : 1.4699
+  Avg MSE (after 60 min)  : 1.3786
+  Threshold               : 0.0327
+  % of drive above thresh : 100.0%
+```
+
+## Data Generation Log
+
+```
+============================================================
+SCENARIO: Alternator Diode Failure
+============================================================
+  Saved 7200 rows -> d:\VIT\hackathon\Code2Create\github\data\test_scenarios\fault_alternator.csv
+  Report  -> d:\VIT\hackathon\Code2Create\github\data\test_scenarios\fault_alternator_report.md
+  Healthy load  (final avg): 42.1%
+  Faulty  load  (final avg): 51.9%
+  Healthy temp  (final):     119.7 C
+  Faulty  temp  (final):     123.0 C
+  Alt drag severity (final): 0.730
+============================================================
+```

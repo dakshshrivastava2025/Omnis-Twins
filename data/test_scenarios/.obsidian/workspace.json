@@ -14,7 +14,7 @@
               "type": "markdown",
               "state": {
                 "file": "edge_aggressive_highway_report.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
@@ -189,5 +189,13 @@
     }
   },
   "active": "db94253afba8e4cd",
-  "lastOpenFiles": []
+  "lastOpenFiles": [
+    "scenario_report.md",
+    "fault_oil_pressure_report.md",
+    "fault_coolant_leak_report.md",
+    "fault_alternator_report.md",
+    "fault_belt_slip_report.md",
+    "edge_mountain_drive_report.md",
+    "edge_aggressive_highway_report.md"
+  ]
 }

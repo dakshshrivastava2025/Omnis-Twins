@@ -180,11 +180,3 @@ print(f"  Healthy temp  (final):     {healthy_temp[-1]:.1f} C")
 print(f"  Faulty  temp  (final):     {fault_temp[-1]:.1f} C")
 print(f"  Alt drag severity (final): {alt_drag[-1]:.3f}")
 print("=" * 60)
-
-
-print(f"  Healthy load  (final avg): {load[-600:].mean():.1f}%")
-print(f"  Faulty  load  (final avg): {fault_load[-600:].mean():.1f}%")
-print(f"  Healthy temp  (final):     {healthy_temp[-1]:.1f} C")
-print(f"  Faulty  temp  (final):     {fault_temp[-1]:.1f} C")
-print(f"  Alt drag severity (final): {alt_drag[-1]:.3f}")
-print("=" * 60)

@@ -48,7 +48,18 @@ def run_inference(csv_path: str = None) -> dict:
     
     config = joblib.load(os.path.join(model_dir, "model_config.joblib"))
     scaler = joblib.load(os.path.join(model_dir, "scaler.joblib"))
-    
+
+    # Load the calibration-computed threshold.
+    # This MUST come from healthy calibration data — never from the live drive.
+    threshold_path = os.path.join(model_dir, "threshold.joblib")
+    if not os.path.exists(threshold_path):
+        raise FileNotFoundError(
+            f"threshold.joblib not found at {threshold_path}. "
+            "Run train_calibration.py first to compute and save the threshold."
+        )
+    THRESHOLD = joblib.load(threshold_path)
+    print(f"Loaded calibration threshold: {THRESHOLD:.4f}")
+
     seq_len = config['sequence_length']
     num_sensors = config['num_sensors']
     sensor_cols = config['sensor_cols']
@@ -86,10 +97,8 @@ def run_inference(csv_path: str = None) -> dict:
             error_per_sensor = torch.mean((reconstructed - batch)**2, dim=(0, 1)).cpu().numpy()
             feature_errors.append(error_per_sensor)
             
-    # Baseline calculated from first 1000 healthy samples
-    baseline_error = np.mean(mse_scores[:1000])
-    baseline_std = np.std(mse_scores[:1000])
-    THRESHOLD = baseline_error + (5 * baseline_std) 
+    # Threshold is loaded from calibration — do NOT recompute from live data.
+    # (Removed wrong baseline computation here.)
     
     # Let's simulate a "live" JSON output representing the peak anomaly
     max_error_idx = np.argmax(mse_scores)

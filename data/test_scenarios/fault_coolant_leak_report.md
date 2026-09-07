@@ -1,56 +1,73 @@
 # Scenario Report: Coolant System Leak
 
 **Type:** Fault  
-**Generated:** 2026-09-07 23:28:07  
+**Generated:** 2026-09-07 23:46:23  
 **CSV:** `d:\VIT\hackathon\Code2Create\github\data\test_scenarios\fault_coolant_leak.csv`  
 **Duration:** 7200 s (2 hours) at 1 Hz  
-**Fault starts at:** 60 min (3600 s)  
 
 ---
 
-## Description
+## Inference Result
 
-A crack in the coolant hose causes progressive fluid loss. Cooling capacity drops as coolant level falls, causing the engine to overheat. The leak severity grows over 4 phases from 60 to 120 minutes.
+| Field | Value |
+|-------|-------|
+| Status | **ANOMALY** |
+| Criticality | CRITICAL |
+| Peak MSE Score | 5.7520 |
+| Threshold | 0.0327 |
+| MSE / Threshold ratio | 175.70x |
+| First breach at | 50 s (0.8 min) |
+| Sustained breach from | 50 s (0.8 min) |
+| Root cause sensor | `coolant_pressure_PSI` |
+| Failing component | Radiator / Coolant Lines |
 
-## Broken Correlation (What the Autoencoder Catches)
+## Actual live_telemetry.json Output
 
-In healthy driving, coolant_temp_C and coolant_pressure_PSI rise and fall TOGETHER (both driven by RPM and engine load). During a leak, temperature RISES while pressure FALLS — a physically anti-correlated pattern the autoencoder cannot reconstruct.
-
-## Sensor Deviations
-
-| Sensor | Direction | Physical Reason |
-|--------|-----------|-----------------|
-| `coolant_temp_C` | RISES above healthy | Reduced coolant volume = less heat absorption |
-| `coolant_pressure_PSI` | FALLS below healthy | Fluid loss reduces system pressure |
-
-## Run Statistics
-
-```
-  Healthy temp (final)           117.7 C
-  Faulty  temp (final)           133.3 C
-  Healthy pressure (final)       16.59 PSI
-  Faulty  pressure (final)       13.07 PSI
-  Leak severity (final)          0.932
-```
-
-## Expected Autoencoder Behavior
-
-**Expected MSE:** HIGH — threshold breach expected ~30 min after fault start  
-
-## Expected Downstream JSON Output
-
-This is the approximate `live_telemetry.json` the system will produce:
+This is the real output the system produced — passed to the 3D UI:
 
 ```json
 {
+  "time_s": 7161.0,
   "status": "ANOMALY",
-  "title": "COMPONENT FAILURE DETECTED",
+  "title": "CRITICAL COMPONENT FAILURE DETECTED",
   "criticality": "CRITICAL",
+  "mse_score": 5.752018451690674,
+  "threshold": 0.03273742515593767,
   "root_cause_sensor": "coolant_pressure_PSI",
   "failing_component": "Radiator / Coolant Lines",
   "description": "Autoencoder detected deviation in coolant_pressure_PSI. Highlight the Radiator / Coolant Lines."
 }
 ```
 
-### 3D UI Action
-Highlight: **Radiator / Coolant Lines**
+## 3D UI Action
+
+- **Highlight component:** Radiator / Coolant Lines
+- **Alert color:** Red (CRITICAL)
+- **Description for tooltip/TTS:** _Autoencoder detected deviation in coolant_pressure_PSI. Highlight the Radiator / Coolant Lines._
+
+## MSE Statistics
+
+```
+  Peak MSE Score          : 5.7520
+  Avg MSE (full drive)    : 2.3749
+  Avg MSE (first 60 min)  : 1.5691
+  Avg MSE (after 60 min)  : 3.1698
+  Threshold               : 0.0327
+  % of drive above thresh : 100.0%
+```
+
+## Data Generation Log
+
+```
+============================================================
+SCENARIO: Coolant System Leak
+============================================================
+  Saved 7200 rows -> d:\VIT\hackathon\Code2Create\github\data\test_scenarios\fault_coolant_leak.csv
+  Report  -> d:\VIT\hackathon\Code2Create\github\data\test_scenarios\fault_coolant_leak_report.md
+  Healthy temp  (final): 117.7 C
+  Faulty  temp  (final): 133.3 C
+  Healthy press (final): 16.59 PSI
+  Faulty  press (final): 13.07 PSI
+  Leak severity (final): 0.932
+============================================================
+```

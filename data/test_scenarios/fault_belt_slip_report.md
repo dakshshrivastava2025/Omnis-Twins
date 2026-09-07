@@ -1,55 +1,71 @@
-# Scenario Report: Serpentine Belt Slip / Wear
+# Scenario Report: Serpentine Belt Slip
 
 **Type:** Fault  
-**Generated:** 2026-09-07 23:28:08  
+**Generated:** 2026-09-07 23:46:38  
 **CSV:** `d:\VIT\hackathon\Code2Create\github\data\test_scenarios\fault_belt_slip.csv`  
 **Duration:** 7200 s (2 hours) at 1 Hz  
-**Fault starts at:** 60 min (3600 s)  
 
 ---
 
-## Description
+## Inference Result
 
-Serpentine belt wear causes intermittent slipping, reducing the spin rate of the water pump below what RPM implies. Coolant flow drops, raising temperature. Belt slip also causes erratic coolant pressure dips and forces the driver to unconsciously add throttle to maintain speed against the power loss.
+| Field | Value |
+|-------|-------|
+| Status | **ANOMALY** |
+| Criticality | CRITICAL |
+| Peak MSE Score | 3.7363 |
+| Threshold | 0.0327 |
+| MSE / Threshold ratio | 114.13x |
+| First breach at | 50 s (0.8 min) |
+| Sustained breach from | 50 s (0.8 min) |
+| Root cause sensor | `intake_air_temp_C` |
+| Failing component | Air Intake System |
 
-## Broken Correlation (What the Autoencoder Catches)
+## Actual live_telemetry.json Output
 
-Three correlations break simultaneously: (1) coolant_temp rises faster than RPM implies (water pump underspeeding), (2) coolant_pressure shows erratic dips out of sync with RPM (pump loses prime), (3) throttle/load tick up without matching speed gain (belt power loss).
-
-## Sensor Deviations
-
-| Sensor | Direction | Physical Reason |
-|--------|-----------|-----------------|
-| `coolant_temp_C` | RISES above RPM prediction | Water pump spins slower than crank RPM implies |
-| `coolant_pressure_PSI` | ERRATIC dips | Pump momentarily loses prime on hard slip events |
-| `engine_load` | RISES above speed expectation | Power lost to slipping belt accessories |
-
-## Run Statistics
-
-```
-  Healthy temp (final)           120.0 C
-  Faulty  temp (final)           132.7 C
-  Belt slip severity (final)     0.775
-```
-
-## Expected Autoencoder Behavior
-
-**Expected MSE:** HIGH — erratic MSE spikes from ~65 min, persistent breach by ~85 min  
-
-## Expected Downstream JSON Output
-
-This is the approximate `live_telemetry.json` the system will produce:
+This is the real output the system produced — passed to the 3D UI:
 
 ```json
 {
+  "time_s": 782.0,
   "status": "ANOMALY",
-  "title": "COMPONENT FAILURE DETECTED",
+  "title": "CRITICAL COMPONENT FAILURE DETECTED",
   "criticality": "CRITICAL",
-  "root_cause_sensor": "coolant_temp_C",
-  "failing_component": "Radiator / Cooling System",
-  "description": "Autoencoder detected deviation in coolant_temp_C. Highlight the Radiator / Cooling System."
+  "mse_score": 3.7362959384918213,
+  "threshold": 0.03273742515593767,
+  "root_cause_sensor": "intake_air_temp_C",
+  "failing_component": "Air Intake System",
+  "description": "Autoencoder detected deviation in intake_air_temp_C. Highlight the Air Intake System."
 }
 ```
 
-### 3D UI Action
-Highlight: **Radiator / Cooling System**
+## 3D UI Action
+
+- **Highlight component:** Air Intake System
+- **Alert color:** Red (CRITICAL)
+- **Description for tooltip/TTS:** _Autoencoder detected deviation in intake_air_temp_C. Highlight the Air Intake System._
+
+## MSE Statistics
+
+```
+  Peak MSE Score          : 3.7363
+  Avg MSE (full drive)    : 1.4864
+  Avg MSE (first 60 min)  : 1.5536
+  Avg MSE (after 60 min)  : 1.4201
+  Threshold               : 0.0327
+  % of drive above thresh : 100.0%
+```
+
+## Data Generation Log
+
+```
+============================================================
+SCENARIO: Serpentine Belt Slip / Wear
+============================================================
+  Saved 7200 rows -> d:\VIT\hackathon\Code2Create\github\data\test_scenarios\fault_belt_slip.csv
+  Report  -> d:\VIT\hackathon\Code2Create\github\data\test_scenarios\fault_belt_slip_report.md
+  Healthy temp  (final):     120.0 C
+  Faulty  temp  (final):     132.7 C
+  Belt slip severity (final): 0.775
+============================================================
+```

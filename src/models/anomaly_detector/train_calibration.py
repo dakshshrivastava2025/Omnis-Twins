@@ -95,8 +95,28 @@ def train():
     # Save the architecture config so inference knows how to build it
     config = {'num_sensors': num_sensors, 'sequence_length': SEQ_LEN, 'sensor_cols': sensor_cols}
     joblib.dump(config, os.path.join(model_dir, "model_config.joblib"))
-    
-    print("Calibration Training Complete! Model and Scaler saved.")
+
+    # ── Compute and save threshold from healthy calibration data ─────────────
+    # This is the ONLY correct way to set the threshold.
+    # The threshold must be computed on healthy data — never on live/anomaly data.
+    # We use the 95th percentile of reconstruction error on the calibration set.
+    print("Computing anomaly threshold from calibration data...")
+    model.eval()
+    cal_mse_scores = []
+    cal_dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False)
+    with torch.no_grad():
+        for batch in cal_dataloader:
+            batch = batch.to(device)
+            reconstructed = model(batch)
+            mse = nn.MSELoss()(reconstructed, batch).item()
+            cal_mse_scores.append(mse)
+
+    cal_mse = np.array(cal_mse_scores)
+    threshold = float(np.percentile(cal_mse, 95))
+    joblib.dump(threshold, os.path.join(model_dir, "threshold.joblib"))
+
+    print(f"Calibration MSE — mean: {cal_mse.mean():.4f}  std: {cal_mse.std():.4f}  95th pct (threshold): {threshold:.4f}")
+    print("Calibration Training Complete! Model, Scaler, and Threshold saved.")
 
 if __name__ == "__main__":
     train()
