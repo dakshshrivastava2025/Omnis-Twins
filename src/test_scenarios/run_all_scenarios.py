@@ -183,23 +183,45 @@ def generate_report(name: str, scenario_type: str, title: str,
         "",
     ]
 
-    if is_fault:
+    # 3D UI Action — always based on ACTUAL inference result, not scenario type assumption
+    lines += ["## 3D UI Action", ""]
+
+    if status == "ANOMALY":
+        alert_color = (
+            "🔴 Red (CRITICAL)" if criticality == "CRITICAL"
+            else "🟠 Orange (HIGH)" if criticality == "HIGH"
+            else "🟡 Yellow (WARNING)"
+        )
         lines += [
-            "## 3D UI Action",
-            "",
+            f"- **Status: ANOMALY detected**",
             f"- **Highlight component:** {failing_comp}",
-            f"- **Alert color:** {'Red (CRITICAL)' if criticality == 'CRITICAL' else 'Orange (HIGH)' if criticality == 'HIGH' else 'Yellow (WARNING)'}",
+            f"- **Alert color:** {alert_color}",
             f"- **Description for tooltip/TTS:** _{description_str}_",
-            "",
         ]
+        if not is_fault:
+            lines += [
+                "",
+                "> ⚠️ **FALSE POSITIVE** — This is an edge case that should NOT be flagged.",
+                "> The model detected a pattern it hasn't learned as 'normal'.",
+                "> Fix: retrain with more diverse healthy data covering this operating mode.",
+            ]
     else:
-        lines += [
-            "## 3D UI Action",
-            "",
-            "- **No component highlight** — system displays green / nominal state.",
-            f"- **Status:** {status}",
-            "",
-        ]
+        if is_fault:
+            lines += [
+                "- **Status: HEALTHY** ← ❌ MISSED FAULT",
+                "- **No component highlight shown**",
+                "",
+                "> ⚠️ **MISSED DETECTION** — This fault scenario was NOT detected.",
+                "> The fault effect may be too subtle relative to the calibration threshold.",
+            ]
+        else:
+            lines += [
+                "- **Status: HEALTHY** ✅",
+                "- **No component highlight** — system displays green / nominal state.",
+            ]
+
+    lines += [""]
+
 
     # MSE stats
     if results_df is not None:

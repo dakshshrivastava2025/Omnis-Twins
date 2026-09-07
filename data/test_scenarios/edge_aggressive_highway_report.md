@@ -1,7 +1,7 @@
 # Scenario Report: Aggressive Highway Drive
 
 **Type:** Edge Case  
-**Generated:** 2026-09-07 23:46:49  
+**Generated:** 2026-09-07 23:52:55  
 **CSV:** `d:\VIT\hackathon\Code2Create\github\data\test_scenarios\edge_aggressive_highway.csv`  
 **Duration:** 7200 s (2 hours) at 1 Hz  
 
@@ -12,12 +12,12 @@
 | Field | Value |
 |-------|-------|
 | Status | **ANOMALY** |
-| Criticality | CRITICAL |
-| Peak MSE Score | 6.0577 |
-| Threshold | 0.0327 |
-| MSE / Threshold ratio | 185.04x |
-| First breach at | 50 s (0.8 min) |
-| Sustained breach from | 50 s (0.8 min) |
+| Criticality | HIGH |
+| Peak MSE Score | 0.1270 |
+| Threshold | 0.0613 |
+| MSE / Threshold ratio | 2.07x |
+| First breach at | 170 s (2.8 min) |
+| Sustained breach from | Never (or brief only) |
 
 ## Actual live_telemetry.json Output
 
@@ -25,15 +25,15 @@ This is the real output the system produced — passed to the 3D UI:
 
 ```json
 {
-  "time_s": 229.0,
+  "time_s": 970.0,
   "status": "ANOMALY",
-  "title": "CRITICAL COMPONENT FAILURE DETECTED",
-  "criticality": "CRITICAL",
-  "mse_score": 6.057708263397217,
-  "threshold": 0.03273742515593767,
-  "root_cause_sensor": "throttle_pos",
-  "failing_component": "Throttle Body",
-  "description": "Autoencoder detected deviation in throttle_pos. Highlight the Throttle Body."
+  "title": "MAJOR ANOMALY DETECTED",
+  "criticality": "HIGH",
+  "mse_score": 0.12704519927501678,
+  "threshold": 0.061308339238166795,
+  "root_cause_sensor": "rpm",
+  "failing_component": "Engine Block / Transmission",
+  "description": "Autoencoder detected deviation in rpm. Highlight the Engine Block / Transmission."
 }
 ```
 
@@ -45,12 +45,12 @@ This is the real output the system produced — passed to the 3D UI:
 ## MSE Statistics
 
 ```
-  Peak MSE Score          : 6.0577
-  Avg MSE (full drive)    : 2.7913
-  Avg MSE (first 60 min)  : 2.7374
-  Avg MSE (after 60 min)  : 2.8444
-  Threshold               : 0.0327
-  % of drive above thresh : 100.0%
+  Peak MSE Score          : 0.1270
+  Avg MSE (full drive)    : 0.0530
+  Avg MSE (first 60 min)  : 0.0530
+  Avg MSE (after 60 min)  : 0.0529
+  Threshold               : 0.0613
+  % of drive above thresh : 20.7%
 ```
 
 ## Data Generation Log
