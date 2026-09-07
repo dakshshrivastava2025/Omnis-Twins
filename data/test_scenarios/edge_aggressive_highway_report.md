@@ -1,7 +1,7 @@
 # Scenario Report: Aggressive Highway Drive
 
 **Type:** Edge Case  
-**Generated:** 2026-09-07 23:59:21  
+**Generated:** 2026-09-08 00:06:13  
 **CSV:** `d:\VIT\hackathon\Code2Create\github\data\test_scenarios\edge_aggressive_highway.csv`  
 **Duration:** 7200 s (2 hours) at 1 Hz  
 
@@ -11,12 +11,12 @@
 
 | Field | Value |
 |-------|-------|
-| Status | **ANOMALY** |
-| Criticality | HIGH |
-| Peak MSE Score | 0.1356 |
-| Threshold | 0.0618 |
-| MSE / Threshold ratio | 2.19x |
-| First breach at | 156 s (2.6 min) |
+| Status | **HEALTHY** |
+| Criticality | NONE |
+| Peak MSE Score | 0.1478 |
+| Threshold | 0.0748 |
+| MSE / Threshold ratio | 1.98x |
+| First breach at | 174 s (2.9 min) |
 | Sustained breach from | Never (or brief only) |
 
 ## Actual live_telemetry.json Output
@@ -25,38 +25,29 @@ This is the real output the system produced — passed to the 3D UI:
 
 ```json
 {
-  "time_s": 1366.0,
-  "status": "ANOMALY",
-  "title": "MAJOR ANOMALY DETECTED",
-  "criticality": "HIGH",
-  "mse_score": 0.13564610481262207,
-  "threshold": 0.06180388405919074,
-  "root_cause_sensor": "rpm",
-  "failing_component": "Engine Block / Transmission",
-  "description": "Autoencoder detected deviation in rpm. Highlight the Engine Block / Transmission."
+  "time_s": 7199.0,
+  "status": "HEALTHY",
+  "title": "SYSTEM NORMAL",
+  "criticality": "NONE",
+  "mse_score": 0.14783595502376556,
+  "threshold": 0.07481302946805951
 }
 ```
 
 ## 3D UI Action
 
-- **Status: ANOMALY detected**
-- **Highlight component:** Engine Block / Transmission
-- **Alert color:** 🟠 Orange (HIGH)
-- **Description for tooltip/TTS:** _Autoencoder detected deviation in rpm. Highlight the Engine Block / Transmission._
-
-> ⚠️ **FALSE POSITIVE** — This is an edge case that should NOT be flagged.
-> The model detected a pattern it hasn't learned as 'normal'.
-> Fix: retrain with more diverse healthy data covering this operating mode.
+- **Status: HEALTHY** ✅
+- **No component highlight** — system displays green / nominal state.
 
 ## MSE Statistics
 
 ```
-  Peak MSE Score          : 0.1356
-  Avg MSE (full drive)    : 0.0535
-  Avg MSE (first 60 min)  : 0.0537
-  Avg MSE (after 60 min)  : 0.0533
-  Threshold               : 0.0618
-  % of drive above thresh : 22.2%
+  Peak MSE Score          : 0.1478
+  Avg MSE (full drive)    : 0.0540
+  Avg MSE (first 60 min)  : 0.0539
+  Avg MSE (after 60 min)  : 0.0541
+  Threshold               : 0.0748
+  % of drive above thresh : 5.5%
 ```
 
 ## Data Generation Log
