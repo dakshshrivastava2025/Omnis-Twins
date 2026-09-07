@@ -30,7 +30,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 import numpy as np
 from scenario_utils import (
-    correlated_noise, build_drive_profile, build_healthy_coolant, save_scenario
+    correlated_noise, build_drive_profile, build_healthy_coolant, save_scenario, save_report
 )
 
 DURATION    = 7200
@@ -150,6 +150,37 @@ save_scenario("fault_oil_pressure", {
     "coolant_temp_C":       fault_temp,
     "coolant_pressure_PSI": fault_pressure,
     "intake_air_temp_C":    intake_air_temp,
+})
+
+save_report("fault_oil_pressure", {
+    "scenario_type": "Fault",
+    "title": "Oil Pump Degradation",
+    "fault_start_min": 60,
+    "description": (
+        "The oil pump wears progressively, reducing lubrication pressure. "
+        "Metal-on-metal friction generates extra heat independent of engine load, "
+        "and the driver unconsciously eases throttle as the engine feels sluggish, "
+        "causing load to drop without a matching speed decrease."
+    ),
+    "broken_corr": (
+        "Healthy coolant_temp_C is tightly linked to engine_load and RPM. "
+        "During oil starvation, friction generates heat INDEPENDENT of load — "
+        "the model sees temperature rising faster than load/RPM would predict. "
+        "Also: engine_load drops while speed holds steady (throttle suppression), "
+        "breaking the normal load-speed relationship."
+    ),
+    "sensor_deltas": [
+        ("coolant_temp_C", "RISES above load/RPM prediction", "Extra friction heat source from poor lubrication"),
+        ("engine_load",    "FALLS below expected for speed",  "Driver eases off unconsciously; power lost to friction"),
+    ],
+    "stats": {
+        "Healthy temp (final)": f"{healthy_temp[-1]:.1f} C",
+        "Faulty  temp (final)": f"{fault_temp[-1]:.1f} C",
+        "Oil starvation (final)": f"{oil_starvation[-1]:.3f}",
+    },
+    "expected_mse": "HIGH — steady climb from ~70 min as friction heat accumulates",
+    "root_sensor": "coolant_temp_C",
+    "failing_comp": "Engine Block",
 })
 
 print(f"  Healthy temp  (final): {healthy_temp[-1]:.1f} C")

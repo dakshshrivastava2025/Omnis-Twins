@@ -36,7 +36,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 import numpy as np
 from scenario_utils import (
-    correlated_noise, build_drive_profile, build_healthy_coolant, save_scenario
+    correlated_noise, build_drive_profile, build_healthy_coolant, save_scenario, save_report
 )
 
 DURATION    = 7200
@@ -163,6 +163,37 @@ save_scenario("fault_belt_slip", {
     "coolant_temp_C":       fault_temp,
     "coolant_pressure_PSI": fault_pressure,
     "intake_air_temp_C":    intake_air_temp,
+})
+
+save_report("fault_belt_slip", {
+    "scenario_type": "Fault",
+    "title": "Serpentine Belt Slip / Wear",
+    "fault_start_min": 60,
+    "description": (
+        "Serpentine belt wear causes intermittent slipping, reducing the spin rate of the "
+        "water pump below what RPM implies. Coolant flow drops, raising temperature. "
+        "Belt slip also causes erratic coolant pressure dips and forces the driver to "
+        "unconsciously add throttle to maintain speed against the power loss."
+    ),
+    "broken_corr": (
+        "Three correlations break simultaneously: "
+        "(1) coolant_temp rises faster than RPM implies (water pump underspeeding), "
+        "(2) coolant_pressure shows erratic dips out of sync with RPM (pump loses prime), "
+        "(3) throttle/load tick up without matching speed gain (belt power loss)."
+    ),
+    "sensor_deltas": [
+        ("coolant_temp_C",       "RISES above RPM prediction",  "Water pump spins slower than crank RPM implies"),
+        ("coolant_pressure_PSI", "ERRATIC dips",                "Pump momentarily loses prime on hard slip events"),
+        ("engine_load",          "RISES above speed expectation","Power lost to slipping belt accessories"),
+    ],
+    "stats": {
+        "Healthy temp (final)": f"{healthy_temp[-1]:.1f} C",
+        "Faulty  temp (final)": f"{fault_temp[-1]:.1f} C",
+        "Belt slip severity (final)": f"{belt_slip[-1]:.3f}",
+    },
+    "expected_mse": "HIGH — erratic MSE spikes from ~65 min, persistent breach by ~85 min",
+    "root_sensor": "coolant_temp_C",
+    "failing_comp": "Radiator / Cooling System",
 })
 
 print(f"  Healthy temp  (final):     {healthy_temp[-1]:.1f} C")

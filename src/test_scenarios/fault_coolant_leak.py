@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 import numpy as np
 from scenario_utils import (
-    correlated_noise, build_drive_profile, build_healthy_coolant, save_scenario
+    correlated_noise, build_drive_profile, build_healthy_coolant, save_scenario, save_report
 )
 
 DURATION    = 7200   # 2 hours at 1 Hz
@@ -151,6 +151,36 @@ save_scenario("fault_coolant_leak", {
     "coolant_temp_C":       fault_temp,
     "coolant_pressure_PSI": fault_pressure,
     "intake_air_temp_C":    intake_air_temp,
+})
+
+save_report("fault_coolant_leak", {
+    "scenario_type": "Fault",
+    "title": "Coolant System Leak",
+    "fault_start_min": 60,
+    "description": (
+        "A crack in the coolant hose causes progressive fluid loss. "
+        "Cooling capacity drops as coolant level falls, causing the engine to overheat. "
+        "The leak severity grows over 4 phases from 60 to 120 minutes."
+    ),
+    "broken_corr": (
+        "In healthy driving, coolant_temp_C and coolant_pressure_PSI rise and fall TOGETHER "
+        "(both driven by RPM and engine load). During a leak, temperature RISES while pressure FALLS — "
+        "a physically anti-correlated pattern the autoencoder cannot reconstruct."
+    ),
+    "sensor_deltas": [
+        ("coolant_temp_C",       "RISES above healthy",  "Reduced coolant volume = less heat absorption"),
+        ("coolant_pressure_PSI", "FALLS below healthy",  "Fluid loss reduces system pressure"),
+    ],
+    "stats": {
+        "Healthy temp (final)": f"{healthy_temp[-1]:.1f} C",
+        "Faulty  temp (final)": f"{fault_temp[-1]:.1f} C",
+        "Healthy pressure (final)": f"{healthy_pressure[-1]:.2f} PSI",
+        "Faulty  pressure (final)": f"{fault_pressure[-1]:.2f} PSI",
+        "Leak severity (final)": f"{leak[-1]:.3f}",
+    },
+    "expected_mse": "HIGH — threshold breach expected ~30 min after fault start",
+    "root_sensor": "coolant_pressure_PSI",
+    "failing_comp": "Radiator / Coolant Lines",
 })
 
 print(f"  Healthy temp  (final): {healthy_temp[-1]:.1f} C")

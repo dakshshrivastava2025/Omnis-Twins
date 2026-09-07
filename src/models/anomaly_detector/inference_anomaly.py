@@ -40,10 +40,10 @@ COMPONENT_MAP = {
     'intake_air_temp_C': 'Air Intake System'
 }
 
-def run_inference():
+def run_inference(csv_path: str = None) -> dict:
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     
-    anomaly_data_path = r"d:\VIT\hackathon\Code2Create\github\data\calibration\anomaly_drive.csv"
+    anomaly_data_path = csv_path or r"d:\VIT\hackathon\Code2Create\github\data\calibration\anomaly_drive.csv"
     model_dir = r"d:\VIT\hackathon\Code2Create\github\models\anomaly_detector"
     
     config = joblib.load(os.path.join(model_dir, "model_config.joblib"))
@@ -145,7 +145,6 @@ def run_inference():
     print(f"\nGenerated JSON output for the 3D UI at: {out_json}")
     print(json.dumps(telemetry, indent=2))
         
-    # Restore saving the MSE scores to a CSV so the plotting script still works!
     out_df = pd.DataFrame({
         'Time_s': time_s,
         'MSE_Score': mse_scores,
@@ -155,5 +154,11 @@ def run_inference():
     out_df.to_csv(out_csv, index=False)
     print(f"Results saved to {out_csv} for plotting.")
 
+    return telemetry, out_df
+
 if __name__ == "__main__":
-    run_inference()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--csv", type=str, default=None, help="Path to scenario CSV file")
+    args = parser.parse_args()
+    run_inference(csv_path=args.csv)

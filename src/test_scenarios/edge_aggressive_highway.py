@@ -37,7 +37,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 import numpy as np
 from scenario_utils import (
-    correlated_noise, build_drive_profile, build_healthy_coolant, save_scenario
+    correlated_noise, build_drive_profile, build_healthy_coolant, save_scenario, save_report
 )
 
 DURATION = 7200
@@ -129,6 +129,36 @@ save_scenario("edge_aggressive_highway", {
     "coolant_temp_C":       corrected_temp,
     "coolant_pressure_PSI": corrected_pressure,
     "intake_air_temp_C":    intake_air_temp,
+})
+
+save_report("edge_aggressive_highway", {
+    "scenario_type": "Edge Case",
+    "title": "Aggressive Highway Drive",
+    "description": (
+        "Hard acceleration bursts to 130-165 kph with sustained high-speed cruising. "
+        "All sensors spike simultaneously during bursts (throttle to 100%, "
+        "load to 90-98%, RPM to 4000-5500) then settle together during cruise. "
+        "This is normal performance driving, NOT a fault."
+    ),
+    "sensor_deltas": [
+        ("speed_kph",      "HIGH (130-165 kph sustained)",  "Aggressive highway cruising"),
+        ("rpm",            "HIGH (peaks to 5500+)",          "High-gear acceleration bursts"),
+        ("throttle_pos",   "HIGH during bursts (85-100%)",  "Hard overtake / acceleration events"),
+        ("engine_load",    "HIGH during bursts (85-98%)",   "Full demand during acceleration"),
+        ("coolant_temp_C", "ELEVATED (avg 115 C)",          "High sustained load, but correlated"),
+    ],
+    "stats": {
+        "Avg speed": f"{speed.mean():.1f} kph  (normal ~65)",
+        "Max speed": f"{speed.max():.1f} kph",
+        "Avg RPM": f"{rpm.mean():.0f}",
+        "Max RPM": f"{rpm.max():.0f}",
+        "Avg coolant temp": f"{corrected_temp.mean():.1f} C",
+        "Max coolant temp": f"{corrected_temp.max():.1f} C",
+        "Burst events": str(n_bursts),
+    },
+    "expected_mse": "LOW sustained — brief spikes during extreme bursts only, no persistent breach",
+    "root_sensor": None,
+    "failing_comp": None,
 })
 
 print(f"  Avg speed       : {speed.mean():.1f} kph  (normal ~65)")

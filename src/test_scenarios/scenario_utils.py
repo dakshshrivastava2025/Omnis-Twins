@@ -133,3 +133,138 @@ def save_scenario(name: str, arrays: dict) -> str:
     df.to_csv(path, index=False)
     print(f"  Saved {len(df)} rows -> {path}")
     return path
+
+
+def save_report(name: str, meta: dict) -> str:
+    """
+    Generate a per-scenario markdown report and save it alongside the CSV.
+
+    meta dict keys:
+        scenario_type   : "Fault" | "Edge Case"
+        title           : Human-readable scenario title
+        description     : What fault mechanism is occurring
+        broken_corr     : What correlation the autoencoder should catch (fault only)
+        fault_start_min : Minutes at which fault begins (fault only, else None)
+        expected_mse    : "HIGH ..." or "LOW ..."
+        root_sensor     : Sensor expected as root cause (fault only, else None)
+        failing_comp    : Vehicle component to highlight (fault only, else None)
+        stats           : dict of label -> value strings to print in the report
+        sensor_deltas   : list of (sensor, direction, explanation) tuples
+    """
+    import datetime
+    ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    csv_path = os.path.join(OUT_DIR, f"{name}.csv")
+
+    scenario_type = meta.get("scenario_type", "Fault")
+    is_fault = scenario_type == "Fault"
+
+    lines = [
+        f"# Scenario Report: {meta['title']}",
+        "",
+        f"**Type:** {scenario_type}  ",
+        f"**Generated:** {ts}  ",
+        f"**CSV:** `{csv_path}`  ",
+        f"**Duration:** 7200 s (2 hours) at 1 Hz  ",
+    ]
+
+    if is_fault and meta.get("fault_start_min"):
+        lines.append(f"**Fault starts at:** {meta['fault_start_min']} min ({meta['fault_start_min'] * 60} s)  ")
+
+    lines += [
+        "",
+        "---",
+        "",
+        "## Description",
+        "",
+        meta.get("description", ""),
+        "",
+    ]
+
+    # Broken correlations (fault only)
+    if is_fault and meta.get("broken_corr"):
+        lines += [
+            "## Broken Correlation (What the Autoencoder Catches)",
+            "",
+            meta["broken_corr"],
+            "",
+        ]
+
+    # Sensor deviations
+    if meta.get("sensor_deltas"):
+        lines += [
+            "## Sensor Deviations",
+            "",
+            "| Sensor | Direction | Physical Reason |",
+            "|--------|-----------|-----------------|",
+        ]
+        for sensor, direction, reason in meta["sensor_deltas"]:
+            lines.append(f"| `{sensor}` | {direction} | {reason} |")
+        lines.append("")
+
+    # Run statistics
+    if meta.get("stats"):
+        lines += [
+            "## Run Statistics",
+            "",
+            "```",
+        ]
+        for label, value in meta["stats"].items():
+            lines.append(f"  {label:<30} {value}")
+        lines += ["```", ""]
+
+    # Expected autoencoder behavior
+    lines += [
+        "## Expected Autoencoder Behavior",
+        "",
+        f"**Expected MSE:** {meta.get('expected_mse', 'N/A')}  ",
+    ]
+
+    # Expected downstream JSON (fault only)
+    if is_fault and meta.get("root_sensor"):
+        lines += [
+            "",
+            "## Expected Downstream JSON Output",
+            "",
+            "This is the approximate `live_telemetry.json` the system will produce:",
+            "",
+            "```json",
+            "{",
+            f'  "status": "ANOMALY",',
+            f'  "title": "COMPONENT FAILURE DETECTED",',
+            f'  "criticality": "CRITICAL",',
+            f'  "root_cause_sensor": "{meta["root_sensor"]}",',
+            f'  "failing_component": "{meta["failing_comp"]}",',
+            f'  "description": "Autoencoder detected deviation in {meta["root_sensor"]}. Highlight the {meta["failing_comp"]}."',
+            "}",
+            "```",
+            "",
+            "### 3D UI Action",
+            f"Highlight: **{meta['failing_comp']}**",
+        ]
+    else:
+        lines += [
+            "",
+            "## Expected Downstream JSON Output",
+            "",
+            "```json",
+            "{",
+            '  "status": "HEALTHY",',
+            '  "title": "SYSTEM NORMAL",',
+            '  "criticality": "NONE"',
+            "}",
+            "```",
+            "",
+            "### 3D UI Action",
+            "No component highlight. System displays green / nominal state.",
+        ]
+
+    lines += [""]
+
+    report = "\n".join(lines)
+    report_path = os.path.join(OUT_DIR, f"{name}_report.md")
+    os.makedirs(OUT_DIR, exist_ok=True)
+    with open(report_path, "w", encoding="utf-8") as f:
+        f.write(report)
+    print(f"  Report  -> {report_path}")
+    return report_path
+

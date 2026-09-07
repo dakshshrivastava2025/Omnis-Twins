@@ -34,7 +34,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 import numpy as np
 from scenario_utils import (
-    correlated_noise, build_drive_profile, build_healthy_coolant, save_scenario
+    correlated_noise, build_drive_profile, build_healthy_coolant, save_scenario, save_report
 )
 
 DURATION    = 7200
@@ -143,6 +143,44 @@ save_scenario("fault_alternator", {
     "coolant_pressure_PSI": fault_pressure,
     "intake_air_temp_C":    intake_air_temp,
 })
+
+save_report("fault_alternator", {
+    "scenario_type": "Fault",
+    "title": "Alternator Diode Failure",
+    "fault_start_min": 60,
+    "description": (
+        "Alternator diode failure causes the alternator to draw extra mechanical torque "
+        "from the engine to compensate, acting as a parasitic drag load. "
+        "This raises engine_load without the driver increasing throttle or gaining speed."
+    ),
+    "broken_corr": (
+        "In healthy driving, engine_load and throttle_pos are tightly coupled to speed and RPM. "
+        "During alternator failure, engine_load rises WITHOUT corresponding throttle or speed increase. "
+        "The model cannot reconstruct 'high load, normal throttle, normal speed' — it's never seen this."
+    ),
+    "sensor_deltas": [
+        ("engine_load",   "RISES above throttle prediction", "Parasitic alternator drag adds hidden mechanical load"),
+        ("coolant_temp_C","RISES above RPM prediction",      "Extra engine work from drag generates more heat"),
+    ],
+    "stats": {
+        "Healthy load avg (final 10 min)": f"{load[-600:].mean():.1f}%",
+        "Faulty  load avg (final 10 min)": f"{fault_load[-600:].mean():.1f}%",
+        "Healthy temp (final)":            f"{healthy_temp[-1]:.1f} C",
+        "Faulty  temp (final)":            f"{fault_temp[-1]:.1f} C",
+        "Alt drag severity (final)":       f"{alt_drag[-1]:.3f}",
+    },
+    "expected_mse": "HIGH — load/throttle/speed decorrelation detectable from ~75 min",
+    "root_sensor": "engine_load",
+    "failing_comp": "Engine Block",
+})
+
+print(f"  Healthy load  (final avg): {load[-600:].mean():.1f}%")
+print(f"  Faulty  load  (final avg): {fault_load[-600:].mean():.1f}%")
+print(f"  Healthy temp  (final):     {healthy_temp[-1]:.1f} C")
+print(f"  Faulty  temp  (final):     {fault_temp[-1]:.1f} C")
+print(f"  Alt drag severity (final): {alt_drag[-1]:.3f}")
+print("=" * 60)
+
 
 print(f"  Healthy load  (final avg): {load[-600:].mean():.1f}%")
 print(f"  Faulty  load  (final avg): {fault_load[-600:].mean():.1f}%")
