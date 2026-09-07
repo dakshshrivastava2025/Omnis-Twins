@@ -785,21 +785,42 @@ for i in range(DURATION):
 
         target = (
             0.32
-            + 0.33 * p
+            + 0.25 * p
         )
 
 
     # --------------------------------------------------------
-    # TERMINAL DEGRADATION EQUILIBRIUM (PLATEAU)
-    # 90-120 minutes
-    #
-    # Fault reaches maximum aperture / steady-state severity.
-    # System stabilizes at degraded operating equilibrium.
+    # SERIOUS DEGRADATION
+    # 90-105 minutes
+    # --------------------------------------------------------
+
+    elif minutes < 105:
+
+        p = (
+            minutes - 90
+        ) / 15
+
+        target = (
+            0.57
+            + 0.25 * p
+        )
+
+
+    # --------------------------------------------------------
+    # SEVERE FAULT
+    # 105-120 minutes
     # --------------------------------------------------------
 
     else:
 
-        target = 0.65
+        p = (
+            minutes - 105
+        ) / 15
+
+        target = (
+            0.82
+            + 0.15 * p
+        )
 
 
     leak_target[i] = target
