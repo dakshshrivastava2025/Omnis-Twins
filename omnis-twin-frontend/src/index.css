@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    width: 100%;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    background-color: #111111;
+    color: #F0F0F0;
+    font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: #C9547A;
+    color: #FFFFFF;
+  }
+
+  /* Sleek Dark Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #111111;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #C9547A;
+  }
+}
+
+/* Focus ring: 2px pink accent */
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid #C9547A !important;
+  outline-offset: 2px !important;
+  border-color: #C9547A !important;
+}
+
+/* ─── Button: Primary (Pink Fill) ─── */
+.btn-primary {
+  background-color: #C9547A;
+  color: #FFFFFF;
+  border-radius: 12px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  transition: background-color 200ms ease, transform 100ms ease, box-shadow 200ms ease;
+}
+
+.btn-primary:hover {
+  background-color: #B54A6C;
+  box-shadow: 0 4px 16px rgba(201, 84, 122, 0.25);
+}
+
+.btn-primary:active {
+  transform: translateY(-1px);
+}
+
+/* ─── Button: Secondary (Outline) ─── */
+.btn-secondary {
+  background-color: transparent;
+  color: #C9547A;
+  border: 1.5px solid #333333;
+  border-radius: 12px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  transition: background-color 200ms ease, border-color 200ms ease, transform 100ms ease;
+}
+
+.btn-secondary:hover {
+  background-color: #1E1E1E;
+  border-color: #C9547A;
+}
+
+.btn-secondary:active {
+  transform: translateY(-1px);
+}
+
+/* ─── Card Hover ─── */
+.card-hover {
+  transition: box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.card-hover:hover {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  border-color: #C9547A;
+}
+
+/* ─── Fade-In-Up Entry Animation ─── */
+.animate-fade-in-up {
+  animation: fadeInUp 420ms ease-out both;
+}
+
+.stagger-1 { animation-delay: 0ms; }
+.stagger-2 { animation-delay: 80ms; }
+.stagger-3 { animation-delay: 160ms; }
+.stagger-4 { animation-delay: 240ms; }
+.stagger-5 { animation-delay: 320ms; }
+.stagger-6 { animation-delay: 400ms; }
+.stagger-7 { animation-delay: 480ms; }
+.stagger-8 { animation-delay: 560ms; }
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Gradient Backgrounds ─── */
+.bg-gradient-surface {
+  background: linear-gradient(180deg, #1E1E1E 0%, #1A1A1A 100%);
+}
+
+.bg-gradient-hero {
+  background: linear-gradient(135deg, #1E1E1E 0%, #111111 100%);
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #C9547A 0%, #E091A8 100%);
+}

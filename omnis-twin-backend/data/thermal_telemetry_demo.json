@@ -1,0 +1,25 @@
+[
+  {"_phase": "Phase 1: Cold Start & Normal Cruising (Nominal Temperatures)"},
+  { "rpm": 1200, "air_temp_c": 24.5, "process_temp_c": 34.0, "frequencyHz": 240, "decibels": 54.0 },
+  { "rpm": 1400, "air_temp_c": 24.8, "process_temp_c": 34.5, "frequencyHz": 280, "decibels": 55.2 },
+  { "rpm": 1500, "air_temp_c": 25.0, "process_temp_c": 35.0, "frequencyHz": 300, "decibels": 56.5 },
+  { "rpm": 1600, "air_temp_c": 25.2, "process_temp_c": 35.4, "frequencyHz": 320, "decibels": 57.0 },
+
+  {"_phase": "Phase 2: Incipient Thermal Stress & Coolant Cavitation"},
+  { "rpm": 1550, "air_temp_c": 26.5, "process_temp_c": 37.8, "frequencyHz": 330, "decibels": 60.1 },
+  { "rpm": 1480, "air_temp_c": 27.2, "process_temp_c": 38.9, "frequencyHz": 350, "decibels": 62.4 },
+
+  {"_phase": "Phase 3: Critical Heat Dissipation Failure (Thermal Gradient Inadequate)"},
+  { "rpm": 1370, "air_temp_c": 29.1, "process_temp_c": 37.6, "temp_diff_c": 8.5, "frequencyHz": 1120, "decibels": 73.1 },
+  { "rpm": 1360, "air_temp_c": 29.2, "process_temp_c": 37.7, "temp_diff_c": 8.5, "frequencyHz": 1125, "decibels": 73.4 },
+  { "rpm": 1375, "air_temp_c": 29.2, "process_temp_c": 37.8, "temp_diff_c": 8.6, "frequencyHz": 1122, "decibels": 73.2 },
+
+  {"_phase": "Phase 4: Severe Radiator Clog & Extreme Overheating"},
+  { "rpm": 1420, "air_temp_c": 26.0, "process_temp_c": 42.5, "temp_diff_c": 16.5, "frequencyHz": 1180, "decibels": 74.5 },
+  { "rpm": 1450, "air_temp_c": 26.2, "process_temp_c": 43.8, "temp_diff_c": 17.6, "frequencyHz": 1200, "decibels": 75.2 },
+
+  {"_phase": "Phase 5: Emergency Cooling Activation & Recovery"},
+  { "rpm": 1100, "air_temp_c": 25.5, "process_temp_c": 38.0, "frequencyHz": 220, "decibels": 58.0 },
+  { "rpm": 900, "air_temp_c": 25.0, "process_temp_c": 35.2, "frequencyHz": 180, "decibels": 53.0 },
+  { "rpm": 800, "air_temp_c": 24.8, "process_temp_c": 34.2, "frequencyHz": 160, "decibels": 51.0 }
+]

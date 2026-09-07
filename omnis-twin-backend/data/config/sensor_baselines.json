@@ -1,0 +1,32 @@
+{
+  "ASPHALT": {
+    "decibels": {
+      "mean": 79.99,
+      "std": 1.21
+    },
+    "frequency_hz": {
+      "mean": 410,
+      "std": 6.07
+    }
+  },
+  "GRAVEL": {
+    "decibels": {
+      "mean": 82,
+      "std": 6
+    },
+    "frequency_hz": {
+      "mean": 1200,
+      "std": 150
+    }
+  },
+  "OFF_ROAD": {
+    "decibels": {
+      "mean": 92,
+      "std": 8.5
+    },
+    "frequency_hz": {
+      "mean": 2200,
+      "std": 280
+    }
+  }
+}

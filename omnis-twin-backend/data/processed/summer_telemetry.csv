@@ -1,0 +1,5 @@
+timestamp,sensor_source,failure_type,is_anomaly,decibels,frequency_hz,rpm,air_temp_c,process_temp_c,torque_nm,tool_wear_min
+2026-11-01T10:00:00Z,SENSOR_TIRE_PRESSURE,normal,0,80.2,355.0,1850,38.5,48.2,42.0,110
+2026-11-01T10:00:01Z,SENSOR_TIRE_PRESSURE,normal,0,79.8,348.0,1852,38.6,48.4,41.8,110
+2026-11-01T10:00:02Z,SENSOR_TIRE_PRESSURE,normal,0,81.1,352.0,1848,38.7,48.5,42.1,110
+2026-11-01T10:00:03Z,SENSOR_TIRE_PRESSURE,normal,0,80.0,350.0,1850,38.8,48.6,42.0,110
