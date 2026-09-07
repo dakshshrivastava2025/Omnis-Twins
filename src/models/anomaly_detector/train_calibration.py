@@ -31,10 +31,32 @@ def train():
     model_dir = r"d:\VIT\hackathon\Code2Create\github\models\anomaly_detector"
     os.makedirs(model_dir, exist_ok=True)
     
-    # 1. Load Data
-    print("Loading Baseline Calibration Data...")
-    df = pd.read_csv(data_path)
+    # ── Load all healthy drive profiles ──────────────────────────────────────
+    # IMPORTANT: training data must cover ALL normal operating modes.
+    # If we only train on city driving, the model flags highway/mountain as
+    # anomalies because it has never seen high RPM or high speed.
+    # We train on: city + highway + mountain — all correlated/healthy drives.
     
+    HEALTHY_CSVS = [
+        r"d:\VIT\hackathon\Code2Create\github\data\calibration\baseline_drive.csv",
+        r"d:\VIT\hackathon\Code2Create\github\data\test_scenarios\edge_mountain_drive.csv",
+        r"d:\VIT\hackathon\Code2Create\github\data\test_scenarios\edge_aggressive_highway.csv",
+    ]
+    
+    dfs = []
+    for p in HEALTHY_CSVS:
+        if os.path.exists(p):
+            dfs.append(pd.read_csv(p))
+            print(f"  Loaded: {os.path.basename(p)}  ({len(dfs[-1])} rows)")
+        else:
+            print(f"  SKIP (not found): {p}")
+
+    if not dfs:
+        raise RuntimeError("No healthy CSV files found. Run chatgpt_code.py and the edge case scripts first.")
+
+    df = pd.concat(dfs, ignore_index=True)
+    print(f"  Total training rows: {len(df)}")
+
     # Drop the time column, keep only sensors
     sensor_cols = [c for c in df.columns if c != 'Time_s']
     data = df[sensor_cols].values
